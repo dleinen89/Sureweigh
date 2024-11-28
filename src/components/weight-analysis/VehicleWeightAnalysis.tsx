@@ -10,8 +10,8 @@ import {
   Info,
   User,
   File,
-  Scale,
   CircleDot,
+  Scale,
 } from "lucide-react";
 import { TabButton } from "./TabButton";
 import { WeightDisplay } from "./WeightDisplay";
@@ -26,24 +26,17 @@ import FrontLeftImage from "../../../public/Front Left.png";
 import FrontRightImage from "../../../public/Front Right.png";
 import RearLeftImage from "../../../public/Rear Left.png";
 import RearRightImage from "../../../public/Rear Right.png";
+import PlaceholderImage from "../../../public/placeholder.jpg"; // Placeholder for center axle
 
 interface VehicleWeightAnalysisProps {
   data: WeightAnalysisData;
 }
 
-const tabTitleMap: Record<string, string> = {
-  details: "Info",
-  unloaded: "Vehicle",
-  loaded: "Vehicle (Hitched)",
-  trailer: "Trailer",
-};
-
 export const VehicleWeightAnalysis: FC<VehicleWeightAnalysisProps> = ({
   data,
 }) => {
   const [activeSection, setActiveSection] = useState<string | null>(null);
-  const [activeTab, setActiveTab] =
-    useState<keyof typeof tabTitleMap>("unloaded");
+  const [activeTab, setActiveTab] = useState<string>("unloaded");
 
   const currentVehicle =
     activeTab !== "details"
@@ -83,10 +76,7 @@ export const VehicleWeightAnalysis: FC<VehicleWeightAnalysisProps> = ({
           <div className="flex justify-between items-start">
             <div className="space-y-1">
               <CardTitle className="flex items-center gap-3">
-                <div className="p-2 bg-blue-600 rounded-lg">
-                  <Scale className="h-6 w-6 text-white" />
-                </div>
-                <span>Mass Analysis: {tabTitleMap[activeTab]}</span>
+                <Image src="/sw logo.png" alt="SW Logo" width={60} height={60} />
               </CardTitle>
             </div>
             <div className="flex gap-2 p-1 bg-white rounded-full shadow-sm">
@@ -361,38 +351,85 @@ export const VehicleWeightAnalysis: FC<VehicleWeightAnalysisProps> = ({
             {/* Trailer Section */}
             <div className="space-y-6 pt-6 border-t border-gray-200">
               <div className="space-y-4">
-                <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">
-                    Front Axle
-                  </h4>
-                  <div className="grid grid-cols-2 gap-4">
+                <div className="p-6 rounded-xl bg-white border border-gray-100 shadow-md">
+                  <div className="flex items-center gap-2 mb-4">
+                    <CircleDot className="h-5 w-5 text-gray-400" />
+                    <span className="font-semibold text-gray-700 text-lg">
+                      Wheel Weights
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-6 gap-4 items-center">
+                    <Image
+                      src={PlaceholderImage}
+                      alt="Front Left"
+                      className="col-span-1 rounded-lg"
+                      layout="intrinsic"
+                    />
                     <WeightDisplay
-                      label="Left"
+                      className="col-span-2 text-center"
+                      label="Front Left"
                       weight={data.trailer.axles[0].left}
                       isHighlighted={activeSection === "trailerFront"}
                     />
+                    <Image
+                      src={PlaceholderImage}
+                      alt="Front Right"
+                      className="col-span-1 rounded-lg"
+                      layout="intrinsic"
+                    />
                     <WeightDisplay
-                      label="Right"
+                      label="Front Right"
                       weight={data.trailer.axles[0].right}
                       isHighlighted={activeSection === "trailerFront"}
+                      className="col-span-2 text-center"
                     />
-                  </div>
-                </div>
-
-                <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">
-                    Rear Axle
-                  </h4>
-                  <div className="grid grid-cols-2 gap-4">
-                    <WeightDisplay
-                      label="Left"
-                      weight={data.trailer.axles[1].left}
-                      isHighlighted={activeSection === "trailerRear"}
+                    <Image
+                      src={PlaceholderImage}
+                      alt="Center Left"
+                      className="col-span-1 rounded-lg"
+                      layout="intrinsic"
                     />
                     <WeightDisplay
-                      label="Right"
-                      weight={data.trailer.axles[1].right}
+                      label="Center Left"
+                      weight={data.trailer.axles[1]?.left || 0}
+                      isHighlighted={activeSection === "trailerCenter"}
+                      className="col-span-2 text-center"
+                    />
+                    <Image
+                      src={PlaceholderImage}
+                      alt="Center Right"
+                      className="col-span-1 rounded-lg"
+                      layout="intrinsic"
+                    />
+                    <WeightDisplay
+                      label="Center Right"
+                      weight={data.trailer.axles[1]?.right || 0}
+                      isHighlighted={activeSection === "trailerCenter"}
+                      className="col-span-2 text-center"
+                    />
+                    <Image
+                      src={PlaceholderImage}
+                      alt="Rear Left"
+                      className="col-span-1 rounded-lg"
+                      layout="intrinsic"
+                    />
+                    <WeightDisplay
+                      label="Rear Left"
+                      weight={data.trailer.axles[2]?.left || 0}
                       isHighlighted={activeSection === "trailerRear"}
+                      className="col-span-2 text-center"
+                    />
+                    <Image
+                      src={PlaceholderImage}
+                      alt="Rear Right"
+                      className="col-span-1 rounded-lg"
+                      layout="intrinsic"
+                    />
+                    <WeightDisplay
+                      label="Rear Right"
+                      weight={data.trailer.axles[2]?.right || 0}
+                      isHighlighted={activeSection === "trailerRear"}
+                      className="col-span-2 text-center"
                     />
                   </div>
                 </div>
@@ -413,8 +450,10 @@ export const VehicleWeightAnalysis: FC<VehicleWeightAnalysisProps> = ({
                   max={data.trailer.specs.gtmMax}
                   formula={`Front: ${
                     data.trailer.axles[0].left + data.trailer.axles[0].right
+                  }kg + Center: ${
+                    (data.trailer.axles[1]?.left || 0) + (data.trailer.axles[1]?.right || 0)
                   }kg + Rear: ${
-                    data.trailer.axles[1].left + data.trailer.axles[1].right
+                    (data.trailer.axles[2]?.left || 0) + (data.trailer.axles[2]?.right || 0)
                   }kg = ${trailerAxleWeights}kg`}
                   section="grossTrailerMass"
                   activeSection={activeSection}

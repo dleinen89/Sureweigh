@@ -61,6 +61,7 @@ export const sampleWeightData: WeightAnalysisData = {
     towballWeight: 300,
     axles: [
       { left: 750, right: 735 },
+      { left: 0, right: 0 }, // Center axle with zero values
       { left: 760, right: 740 }
     ],
     specs: {
