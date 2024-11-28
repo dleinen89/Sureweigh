@@ -9,7 +9,10 @@ import {
   Caravan,
   Info,
   User,
+  Calendar,
+  Hash,
   File,
+  FileText,
   Scale,
   CircleDot,
 } from "lucide-react";
@@ -33,8 +36,8 @@ interface VehicleWeightAnalysisProps {
 
 const tabTitleMap: Record<string, string> = {
   details: "Info",
-  unloaded: "Vehicle",
-  loaded: "Vehicle (Hitched)",
+  unloaded: "Vehicle Only",
+  loaded: "Vehicle + Trailer",
   trailer: "Trailer",
 };
 
@@ -89,32 +92,6 @@ export const VehicleWeightAnalysis: FC<VehicleWeightAnalysisProps> = ({
                 <span>Mass Analysis: {tabTitleMap[activeTab]}</span>
               </CardTitle>
             </div>
-            <div className="flex gap-2 p-1 bg-white rounded-full shadow-sm">
-              <TabButton
-                id="details"
-                label="Info"
-                activeTab={activeTab}
-                onTabChange={setActiveTab}
-              />
-              <TabButton
-                id="unloaded"
-                label="Vehicle"
-                activeTab={activeTab}
-                onTabChange={setActiveTab}
-              />
-              <TabButton
-                id="loaded"
-                label="Vehicle (Hitched)"
-                activeTab={activeTab}
-                onTabChange={setActiveTab}
-              />
-              <TabButton
-                id="trailer"
-                label="Trailer"
-                activeTab={activeTab}
-                onTabChange={setActiveTab}
-              />
-            </div>
           </div>
           <div></div>
           <InfoCard
@@ -122,28 +99,69 @@ export const VehicleWeightAnalysis: FC<VehicleWeightAnalysisProps> = ({
             icon={File}
             data={{ reportInfo: data.reportInfo }}
           >
-            <div className="grid grid-cols-3 gap-4 text-sm">
-              <div>
-                <div className="text-gray-500">Report Type</div>
-                <div className="font-medium">
-                  {data.reportInfo.reportType}
+                <div className="grid grid-cols-3 gap-4 text-sm">
+                  <div>
+                    <div className="text-gray-500">Name</div>
+                    <div className="font-medium">
+                      {data.reportInfo.customer.name}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-gray-500">Phone</div>
+                    <div className="font-medium">
+                      {data.reportInfo.customer.phone}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-gray-500">Email</div>
+                    <div className="font-medium">
+                      {data.reportInfo.customer.email}
+                    </div>
+                  </div>
                 </div>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <FileText className="w-4 h-4 text-gray-500" />
+                <span>{data.reportInfo.reportType}</span>
               </div>
-              <div>
-                <div className="text-gray-500">Report Number</div>
-                <div className="font-medium">
-                  {data.reportInfo.reportNumber}
-                </div>
+
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-gray-500" />
+                <span>{data.reportInfo.date}</span>
               </div>
-              <div>
-                <div className="text-gray-500">Date</div>
-                <div className="font-medium">
-                  {data.reportInfo.date}
-                </div>
+              <div className="flex items-center gap-2">
+                <Hash className="w-4 h-4 text-gray-500" />
+                <span>{data.reportInfo.reportNumber}</span>
               </div>
             </div>
-            
           </InfoCard>
+
+          <div className="flex gap-2 p-1 bg-white rounded-full shadow-sm">
+            <TabButton
+              id="details"
+              label="Info"
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+            />
+            <TabButton
+              id="unloaded"
+              label="Vehicle Only"
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+            />
+            <TabButton
+              id="loaded"
+              label="Vehicle + Trailer"
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+            />
+            <TabButton
+              id="trailer"
+              label="Trailer"
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+            />
+          </div>
 
           {activeTab === "details" && (
             <>
@@ -203,9 +221,9 @@ export const VehicleWeightAnalysis: FC<VehicleWeightAnalysisProps> = ({
               >
                 <DetailsGrid details={data.vehicle.details} />
               </InfoCard>
-
+              
               <InfoCard
-                title={`Measurements`}
+                title={`Measured Mass`}
                 icon={Scale} // Use the icon if applicable
                 data={{ reportInfo: data.reportInfo }} // Pass relevant data here if needed
               />
@@ -311,6 +329,7 @@ export const VehicleWeightAnalysis: FC<VehicleWeightAnalysisProps> = ({
                   />
                   {activeTab === "loaded" && (
                     <>
+
                       <WeightAnalysisCard
                         title="Tow Ball Load (TBL)"
                         current={data.trailer.towballWeight}
@@ -319,8 +338,9 @@ export const VehicleWeightAnalysis: FC<VehicleWeightAnalysisProps> = ({
                         section="towball"
                         activeSection={activeSection}
                         onSectionChange={setActiveSection}
-                      ></WeightAnalysisCard>
-
+                      >
+                      </WeightAnalysisCard>
+                      
                       <WeightAnalysisCard
                         title="Towing Capacity (TC)"
                         current={towingCapacity}
@@ -329,7 +349,8 @@ export const VehicleWeightAnalysis: FC<VehicleWeightAnalysisProps> = ({
                         section="towingCapacity"
                         activeSection={activeSection}
                         onSectionChange={setActiveSection}
-                      ></WeightAnalysisCard>
+                      >
+                      </WeightAnalysisCard>
 
                       <WeightAnalysisCard
                         title="Gross Combination Mass (GCM)"
@@ -341,7 +362,9 @@ export const VehicleWeightAnalysis: FC<VehicleWeightAnalysisProps> = ({
                         section="gcm"
                         activeSection={activeSection}
                         onSectionChange={setActiveSection}
-                      ></WeightAnalysisCard>
+                      >
+                      </WeightAnalysisCard>
+                    
                     </>
                   )}
                 </div>
@@ -405,8 +428,9 @@ export const VehicleWeightAnalysis: FC<VehicleWeightAnalysisProps> = ({
                   section="towball"
                   activeSection={activeSection}
                   onSectionChange={setActiveSection}
-                ></WeightAnalysisCard>
-
+                >
+                </WeightAnalysisCard>
+               
                 <WeightAnalysisCard
                   title="Gross Trailer Mass (GTM)"
                   current={trailerAxleWeights}
@@ -419,7 +443,8 @@ export const VehicleWeightAnalysis: FC<VehicleWeightAnalysisProps> = ({
                   section="grossTrailerMass"
                   activeSection={activeSection}
                   onSectionChange={setActiveSection}
-                ></WeightAnalysisCard>
+                >
+                </WeightAnalysisCard>
 
                 <WeightAnalysisCard
                   title="Aggregate Trailer Mass (ATM)"
@@ -430,7 +455,11 @@ export const VehicleWeightAnalysis: FC<VehicleWeightAnalysisProps> = ({
                   activeSection={activeSection}
                   onSectionChange={setActiveSection}
                   details="The total weight of the trailer and its load when uncoupled from the tow vehicle, including the Tow Ball Load (TBL)."
-                ></WeightAnalysisCard>
+                >
+                 
+                </WeightAnalysisCard>
+
+
               </div>
             </div>
           </>
